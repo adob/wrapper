@@ -7,6 +7,10 @@ QT += network
 TEMPLATE = app
 QMAKE_CXXFLAGS += -std=gnu++0x
 
+win32 {
+    CONFIG += console
+}
+
 MOC_DIR = mocs
 OBJECTS_DIR = obj
 

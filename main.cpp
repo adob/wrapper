@@ -18,17 +18,7 @@ int ourpid = QCoreApplication::applicationPid();
 void our_log(QString const& str)
 {    
     
-    auto t = time(NULL);
-    char *timestr = asctime(localtime(&t));
-    
-    for (char *c=timestr; *c != '\0'; c++) if (*c=='\n') *c = '\0';
-    
-    if (logfile != stderr)
-        eprint "%s" % str;
-    
-    fprint (logfile) "%s %s wrapper[%d]: %s" % timestr, hostname, ourpid, str;
-    
-    fflush(logfile);
+    print "ourlog:", str;
 }
 
 int main(int argc, char *argv[])

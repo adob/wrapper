@@ -37,8 +37,6 @@ Wrapper::start()
     
     proc.start(command);
     
-    pid = proc.pid();
-    
     our_log( ( sprint "INFO: Starting %s[%d]\n" % name, pid ) );
     
     timer.start(30*1000);
@@ -48,17 +46,7 @@ Wrapper::start()
 void 
 Wrapper::log(const char* msg)
 {
-    auto t = time(NULL);
-    char *timestr = asctime(localtime(&t));
-    
-    for (char *c=timestr; *c != '\0'; c++) if (*c=='\n') *c = '\0';
-    
-    fprint (logfile) "%s %s %s[%d]: %s" % timestr, hostname, name, pid, msg;
-    
-    if (logfile != stderr)
-        eprint "%s[%d]: %s" % name, pid, msg;
-    
-    fflush(logfile);
+    print "log:", msg;
 }
 
 void     
