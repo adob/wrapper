@@ -3,29 +3,21 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QCoreApplication>
-#include <QHostInfo>
 #include <QTimer>
 
 
 #include "print.h"
+#include "log.h"
 #include "Wrapper.h"
 
 
 FILE *logfile;
-QString hostname = QHostInfo::localHostName();
 int ourpid = QCoreApplication::applicationPid();
-
-void our_log(QString const& str)
-{    
-    
-    print "ourlog:", str;
-}
 
 int main(int argc, char *argv[])
 {    
-    
     if (argc != 2) {
-        eprint "FATAL: Incorrect usage. Use: %s config.ini\n" % argv[0];
+        our_log( (sprint "FATAL: Incorrect usage. Use: %s config.ini\n" % argv[0]) );
         return 1;
     }
     
@@ -33,11 +25,11 @@ int main(int argc, char *argv[])
     switch (settings.status())
     {
       case QSettings::AccessError:
-        eprint "FATAL: Cannot access configuration file\n";
+        our_log("FATAL: Cannot access configuration file\n");
         return 1;
         
       case QSettings::FormatError:
-        eprint "FATAL: Format error while reading configuation file\n";
+        our_log("FATAL: Format error while reading configuation file\n");
         return 1;
         
       default:
@@ -45,26 +37,14 @@ int main(int argc, char *argv[])
     }
     
     if (! settings.contains("command") ) {
-        eprint "FATAL: Configuration file does not contain command property";
+        our_log("FATAL: Configuration file does not contain command property");
         return 1;
     }
-    
-    QString logfilename = settings.value("logfile", "-").toString();
-    if (logfilename == "-")
-        logfile = stderr;
-    else
-        logfile = fopen(logfilename.toLocal8Bit(), "a");
-    
-    if (! logfile) {
-        perror("FATAL: Could not open log file");
-        return 1;
-    }
+
     
     Wrapper wrapper;
     wrapper.command = settings.value("command").toString();
     wrapper.name = settings.value("name", QFileInfo(wrapper.command).baseName()).toString();
-    wrapper.logfile = logfile;
-    wrapper.hostname = hostname;
     wrapper.ourpid = ourpid;
     wrapper.timeout = settings.value("timeout", -1).toInt();
     if (wrapper.timeout != -1)

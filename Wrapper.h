@@ -19,9 +19,7 @@ class Wrapper : public QObject
 public:
     QString command;
     QString name;
-    QString hostname;
     int ourpid;
-    FILE *logfile;
     int timeout;
 
     

@@ -1,6 +1,8 @@
 #include <QCoreApplication>
+#include <windows.h>
 
 #include "Wrapper.h"
+
 
 #include "print.h"
 #include "log.h"
@@ -34,10 +36,11 @@ void
 Wrapper::start()
 {
     status = STARTING;
-    
+    our_log( ( sprint "INFO: Starting %s[%d]\n" % name, pid ) );
+
     proc.start(command);
     
-    our_log( ( sprint "INFO: Starting %s[%d]\n" % name, pid ) );
+
     
     timer.start(30*1000);
     
@@ -46,7 +49,8 @@ Wrapper::start()
 void 
 Wrapper::log(const char* msg)
 {
-    print "log:", msg;
+    log_message(name, msg);
+    eprint "%s: %s" % name, msg;
 }
 
 void     
@@ -81,7 +85,7 @@ Wrapper::handle_stderr()
     proc.setReadChannel(QProcess::StandardError);
     while (proc.canReadLine())
     {
-        int count = proc.readLine(buf, sizeof buf);
+        proc.readLine(buf, sizeof buf);
         log(buf);
     }
 }
@@ -121,6 +125,8 @@ Wrapper::handle_started()
 {
     timer.stop();
     status = RUNNING;
+
+    pid = proc.pid()->dwProcessId;
     
     pump.start();
     
